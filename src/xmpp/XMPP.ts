@@ -245,7 +245,21 @@ class XMPP extends Base {
         const wasUnavailable = !friend.lastAvailableTimestamp;
         friend.lastAvailableTimestamp = Date.now();
 
-        const presence = JSON.parse(p.status);
+        let presence;
+        try {
+          presence = JSON.parse(p.status);
+        } catch (err: any) {
+          if (err instanceof SyntaxError) {
+            this.client.emit('xmpp:presence:error', {
+              from: p.from,
+              status: p.status,
+              message: err.message,
+              name: err.name,
+            });
+            return;
+          }
+          throw err;
+        }
 
         const before = this.client.friend.list.get(friendId)?.presence;
         const after = new FriendPresence(this.client, presence, friend, p.show || 'online', p.from);
@@ -267,6 +281,7 @@ class XMPP extends Base {
         this.client.emit('xmpp:presence:error', err);
       }
     });
+
 
     this.connection!.on('message', async (m) => {
       if (m.type && m.type !== 'normal') return;

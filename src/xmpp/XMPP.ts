@@ -250,12 +250,6 @@ class XMPP extends Base {
           presence = JSON.parse(p.status);
         } catch (err: any) {
           if (err instanceof SyntaxError) {
-            this.client.emit('xmpp:presence:error', {
-              from: p.from,
-              status: p.status,
-              message: err.message,
-              name: err.name,
-            });
             return;
           }
           throw err;

@@ -669,17 +669,22 @@ class XMPP extends Base {
    * @param to The JID of a specific friend
    */
   public sendStatus(status?: object | string, show?: Constants.PresenceShow, to?: string) {
-    if (!status) {
-      this.connection!.sendPresence();
-      return;
-    }
-
-    this.connection!.sendPresence({
-      status: JSON.stringify(typeof status === 'string' ? { Status: status } : status),
-      to,
-      show,
-    });
+  if (!this.connection || !this.connection.sessionStarted) {
+    this.client.debug('[XMPP] No se puede enviar estado - conexión no establecida');
+    return;
   }
+
+  if (!status) {
+    this.connection.sendPresence();
+    return;
+  }
+
+  this.connection.sendPresence({
+    status: JSON.stringify(typeof status === 'string' ? { Status: status } : status),
+    to,
+    show,
+  });
+}
 
   /**
    * Sends an XMPP message

@@ -66,7 +66,6 @@ export default Object.freeze({
 
   // FRIENDS
   FRIENDS: 'https://friends-public-service-prod.ol.epicgames.com/friends/api/v1',
-  FRIEND_ADD: 'https://friends-public-service-prod.ol.epicgames.com/friends/api/public/friends',
   FRIEND_DELETE: 'https://friends-public-service-prod.ol.epicgames.com/friends/api/v1',
   FRIEND_BLOCK: 'https://friends-public-service-prod.ol.epicgames.com/friends/api/public/blocklist',
 

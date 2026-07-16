@@ -22,7 +22,7 @@ class IncomingPendingFriend extends BasePendingFriend {
    * @throws {EpicgamesAPIError}
    */
   public async accept() {
-    return this.client.friend.add(this.id);
+    return this.client.friend.acceptRequest(this.id);
   }
 
   /**

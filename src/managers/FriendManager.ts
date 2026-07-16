@@ -105,6 +105,43 @@ class FriendManager extends Base {
   }
 
   /**
+   * Accepts an incoming friendship request
+   * @param friend The id or display name of the user whose request to accept
+   * @throws {UserNotFoundError} The user wasn't found
+   * @throws {DuplicateFriendshipError} The user is already friends with the client
+   * @throws {InviterFriendshipsLimitExceededError} The client's friendship limit is reached
+   * @throws {InviteeFriendshipsLimitExceededError} The user's friendship limit is reached
+   * @throws {EpicgamesAPIError}
+   */
+  public async acceptRequest(friend: string) {
+    const userID = await this.client.user.resolveId(friend);
+    if (!userID) throw new UserNotFoundError(friend);
+
+    try {
+      await this.client.http.epicgamesRequest({
+        method: 'POST',
+        url: `${Endpoints.FRIENDS}/${this.client.user.self!.id}/incoming/accept`,
+        params: { targetIds: userID },
+      }, AuthSessionStoreKey.Fortnite);
+    } catch (e) {
+      if (e instanceof EpicgamesAPIError) {
+        switch (e.code) {
+          case 'errors.com.epicgames.friends.duplicate_friendship':
+            throw new DuplicateFriendshipError(friend);
+          case 'errors.com.epicgames.friends.inviter_friendships_limit_exceeded':
+            throw new InviteeFriendshipsLimitExceededError(friend);
+          case 'errors.com.epicgames.friends.invitee_friendships_limit_exceeded':
+            throw new InviteeFriendshipsLimitExceededError(friend);
+          case 'errors.com.epicgames.friends.account_not_found':
+            throw new UserNotFoundError(friend);
+        }
+      }
+
+      throw e;
+    }
+  }
+
+  /**
    * Removes a friend from the client's friend list or declines / aborts a pending friendship request
    * @param friend The id or display name of the friend
    * @throws {FriendNotFoundError} The user does not exist or is not friends with the client

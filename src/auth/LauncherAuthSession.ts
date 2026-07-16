@@ -113,7 +113,9 @@ class LauncherAuthSession extends AuthSession<AuthSessionType.Launcher> {
 
   public initRefreshTimeout() {
     clearTimeout(this.refreshTimeout);
-    this.refreshTimeout = setTimeout(() => this.refresh(), this.expiresAt.getTime() - Date.now() - 15 * 60 * 1000);
+    this.refreshTimeout = setTimeout(() => {
+      this.refresh().catch((error) => this.client.emit('auth:session:refresh:error', error, this.type));
+    }, this.expiresAt.getTime() - Date.now() - 15 * 60 * 1000);
   }
 
   public static async create(client: Client, clientId: string, clientSecret: string, data: any) {

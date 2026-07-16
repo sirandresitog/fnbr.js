@@ -19,6 +19,7 @@ import type PartyMemberConfirmation from '../src/structures/party/PartyMemberCon
 import type PartyMessage from '../src/structures/party/PartyMessage';
 import type ReceivedPartyInvitation from '../src/structures/party/ReceivedPartyInvitation';
 import type User from '../src/structures/user/User';
+import type { AuthSessionType } from './enums';
 import type {
   EpicgamesOAuthData, STWMissionAlertData, STWMissionData, STWProfileLockerSlotData,
   STWTheaterData, TournamentWindowTemplateData,
@@ -535,6 +536,14 @@ export interface ClientEvents {
    * @param error The error that occurred
    */
   'xmpp:chat:error': (error: Error) => void;
+
+  /**
+   * Emitted when an auth session's scheduled background token refresh fails (eg. an invalidated refresh token).
+   * The session is left expired; a manual login is required to recover it.
+   * @param error The error that occurred
+   * @param authSessionType The type of the auth session that failed to refresh
+   */
+  'auth:session:refresh:error': (error: Error, authSessionType: AuthSessionType) => void;
 
   /**
    * Emitted when the client recieved a party invitation

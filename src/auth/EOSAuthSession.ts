@@ -87,7 +87,9 @@ class EOSAuthSession extends AuthSession<AuthSessionType.EOS> {
 
   public initRefreshTimeout() {
     clearTimeout(this.refreshTimeout);
-    this.refreshTimeout = setTimeout(() => this.refresh(), this.expiresAt.getTime() - Date.now() - 15 * 60 * 1000);
+    this.refreshTimeout = setTimeout(() => {
+      this.refresh().catch((error) => this.client.emit('auth:session:refresh:error', error, this.type));
+    }, this.expiresAt.getTime() - Date.now() - 15 * 60 * 1000);
   }
 
   private static async authenticate(
